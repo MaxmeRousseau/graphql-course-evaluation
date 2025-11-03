@@ -28,9 +28,14 @@ L'objectif de cette évaluation est de mettre en pratique les compétences acqui
 
 ## 🚀 Partie 1 - Configuration du serveur (30 points)
 
-### 1.1 Configuration Apollo Server (10 points)
+> **Note** : Deux implémentations sont disponibles selon votre préférence :
+> - Node.js avec Apollo Server → dossier `server-apollo/`
+> - Python avec Graphene → dossier `server-python/`
+> Si vous voulez utiliser une autre technologie, veuillez le préciser. La seule exigence est que le serveur supporte les fonctionnalités demandées (queries, mutations, subscriptions, authentification, etc.). Et assurez-vous de fournir des instructions claires pour l'installation et le démarrage du serveur dans ce cas.
 
-📁 Fichier : `server-apollo/src/index.js`
+### 1.1 Configuration du serveur (10 points)
+
+**Apollo Server (Node.js)** - 📁 Fichier : `server-apollo/src/index.js`
 
 **TODO 1.1** : Configurer Apollo Server v4 avec :
 - Support des subscriptions (graphql-ws)
@@ -42,9 +47,22 @@ L'objectif de cette évaluation est de mettre en pratique les compétences acqui
 // Penser à configurer le WebSocket pour les subscriptions
 ```
 
+**Graphene (Python)** - 📁 Fichier : `server-python/app.py`
+
+**TODO 1.1** : Configurer Flask avec Graphene :
+- Support des subscriptions WebSocket
+- Context d'authentification (JWT)
+- Endpoint GraphQL avec Flask
+
+```python
+# Indice : Utiliser Flask, GraphQLView, flask-cors
+# Penser à configurer le middleware d'authentification
+```
+
 ### 1.2 Schéma GraphQL (20 points)
 
-📁 Fichier : `server-apollo/src/schema.js`
+**Apollo Server** - 📁 Fichier : `server-apollo/src/schema.js`
+**Graphene** - 📁 Fichier : `server-python/schema.py`
 
 **TODO 1.2** : Définir le schéma GraphQL complet avec les types suivants :
 
@@ -73,7 +91,8 @@ L'objectif de cette évaluation est de mettre en pratique les compétences acqui
 
 ## 🔧 Partie 2 - Resolvers (40 points)
 
-📁 Fichier : `server-apollo/src/resolvers.js`
+**Apollo Server** - 📁 Fichier : `server-apollo/src/resolvers.js`
+**Graphene** - 📁 Fichier : `server-python/schema.py` (classes Query, Mutation, Subscription)
 
 ### 2.1 Queries (10 points)
 
@@ -217,10 +236,21 @@ Si vous terminez en avance, vous pouvez implémenter ces fonctionnalités bonus 
 ## 🛠️ Démarrage
 
 ### Serveur
+
+**Option 1 : Apollo Server (Node.js)**
 ```bash
 cd server-apollo
 npm install
 npm start
+```
+
+**Option 2 : Graphene (Python)**
+```bash
+cd server-python
+python3 -m venv venv
+source venv/bin/activate  # Sur Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
 ```
 
 Le serveur démarre sur `http://localhost:4000`

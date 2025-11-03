@@ -16,15 +16,24 @@ Mettre en pratique les compétences acquises durant le cours GraphQL en créant 
 ## 🚀 Installation et démarrage
 
 ### Prérequis
-- Node.js 18+ installé
+- Node.js 18+ installé (pour Apollo Server et Client React)
+- Python 3.8+ installé (pour Graphene, optionnel)
 - Un éditeur de code (VS Code recommandé)
 
 ### Installation
 
-**Serveur GraphQL :**
+**Option 1 : Serveur Apollo (Node.js)**
 ```bash
 cd server-apollo
 npm install
+```
+
+**Option 2 : Serveur Graphene (Python)**
+```bash
+cd server-python
+python3 -m venv venv
+source venv/bin/activate  # Sur Windows: venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
 **Client React :**
@@ -35,11 +44,21 @@ npm install
 
 ### Démarrage
 
-**1. Démarrer le serveur :**
+**1. Démarrer le serveur (choisir une option) :**
+
+*Option Apollo :*
 ```bash
 cd server-apollo
 npm start
 ```
+
+*Option Graphene :*
+```bash
+cd server-python
+source venv/bin/activate
+python app.py
+```
+
 Le serveur démarre sur `http://localhost:4000/graphql`
 
 **2. Démarrer le client :**
@@ -52,11 +71,18 @@ Le client démarre sur `http://localhost:5173`
 ## 📁 Structure du projet
 
 ```
-├── server-apollo/          # Serveur GraphQL
+├── server-apollo/          # Serveur GraphQL (Node.js)
 │   └── src/
 │       ├── index.js        # Configuration Apollo Server
 │       ├── schema.js       # Schéma GraphQL (typeDefs)
 │       └── resolvers.js    # Resolvers (queries, mutations, subscriptions)
+│
+├── server-python/          # Serveur GraphQL (Python) - Alternative
+│   ├── app.py             # Configuration Flask + Graphene
+│   ├── schema.py          # Schéma GraphQL (Graphene)
+│   ├── auth.py            # Middleware d'authentification
+│   ├── data.py            # Données et helpers
+│   └── requirements.txt   # Dépendances Python
 │
 ├── client/                 # Application React
 │   └── src/
@@ -109,11 +135,19 @@ Si vous terminez en avance, vous pouvez explorer ces fonctionnalités déjà pr�
 
 ## 📝 Technologies utilisées
 
-**Backend :**
+**Backend (2 options au choix) :**
+
+*Option Node.js :*
 - Apollo Server 4
 - graphql-ws (WebSocket pour subscriptions)
 - jsonwebtoken (JWT)
 - Express
+
+*Option Python :*
+- Graphene 3
+- Flask
+- PyJWT (JWT)
+- flask-cors
 
 **Frontend :**
 - React 18
@@ -131,9 +165,13 @@ Si vous terminez en avance, vous pouvez explorer ces fonctionnalités déjà pr�
 
 ## 📖 Ressources utiles
 
+**Backend :**
 - [Documentation Apollo Server](https://www.apollographql.com/docs/apollo-server/)
-- [Documentation Apollo Client](https://www.apollographql.com/docs/react/)
+- [Documentation Graphene Python](https://docs.graphene-python.org/)
 - [GraphQL Schema Documentation](https://graphql.org/learn/schema/)
+
+**Frontend :**
+- [Documentation Apollo Client](https://www.apollographql.com/docs/react/)
 
 ---
 
