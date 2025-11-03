@@ -255,10 +255,10 @@ Le client démarre sur `http://localhost:5173`
 
 - Code source complet avec tous les TODO implémentés
 - Application fonctionnelle (serveur + client)
-- Pas besoin de documentation supplémentaire
+- Pas besoin de documentation supplémentaire => Prenez soin de commenter votre code là où c'est nécessaire
 
 ## ⏱️ Durée
 
-**4 heures**
+**3 heures**
 
 Bon courage ! 🚀
