@@ -18,11 +18,22 @@ query TasksForColumn {
       id
       name
       tasks(first: 100) {
-        edges {
-          # TODO : cursor, node { ... }
-        }
-        pageInfo {
-          # TODO
+        tasksConnection {
+          edges {
+            cursor
+            node {
+              id
+              title
+              description
+              assignees { id name }
+              comments { id content author { id name } createdAt }
+              column { id }
+            }
+          }
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
         }
       }
     }
