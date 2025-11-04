@@ -11,13 +11,15 @@ import CommentSection from './CommentSection'
 
 const UPDATE_TASK = gql`
 mutation UpdateTask($input: UpdateTaskInput!) {
-  # TODO
+  updateTask(input: $input) {
+    id
+  }
 }
 `
 
 const DELETE_TASK = gql`
-mutation DeleteTask($id: ID!) {
-  # TODO
+mutation DeleteTask($deleteTaskId: ID!) {
+  deleteTask(id: $deleteTaskId)
 }
 `
 
