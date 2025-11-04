@@ -57,11 +57,11 @@ mutation MoveTask($id: ID!, $to: ID!) {
 }
 `
 
-const MOVE_TASK = gql`
-mutation MoveTask($id: ID!, $to: ID!) {
-  moveTask(id: $id, toColumnId: $to) { id column { id name } }
-}
-`
+// const MOVE_TASK = gql`
+// mutation MoveTask($id: ID!, $to: ID!) {
+//   moveTask(id: $id, toColumnId: $to) { id column { id name } }
+// }
+// `
 
 const COLUMN_ICONS = {
   'Todo': '📋',

@@ -46,19 +46,21 @@ export const resolvers = ({ pubSub }) => ({
   
   Query: {
     me: (_, __, { user }) => {
-      // TODO
+      return user;
     },
     board: () => {
-      // TODO
+      const board = { ...seedData.board };
+      board.columns = board.columns.slice().sort((a, b) => a.order - b.order);
+      return board;
     },
     users: () => {
-      // TODO
+      return seedData.users.map(({ password, ...user }) => user);
     },
   },
 
   Board: {
     columns: (board) => {
-      // TODO
+      return board.columns.slice().sort((a, b) => a.order - b.order);
     }
   },
 
@@ -71,28 +73,53 @@ export const resolvers = ({ pubSub }) => ({
   
   Column: {
     tasks: (column, { first = 10, after }) => {
-      // TODO : Utiliser toCursor() et fromCursor()
+      let tasks = seedData.tasks.filter(task => task.columnId === column.id);
+
+      if (after) {
+        const afterId = fromCursor(after);
+        const index = tasks.findIndex(task => task.id === afterId);
+        if (index >= 0) {
+          tasks = tasks.slice(index + 1);
+        }
+      }
+
+      const slicedTasks = tasks.slice(0, first);
+      const edges = slicedTasks.map(task => ({
+        node: task,
+        cursor: toCursor(task.id)
+      }));
+
+      const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : null;
+      const hasNextPage = tasks.length > first;
+
+      return {
+        edges,
+        pageInfo: {
+          endCursor,
+          hasNextPage
+        }
+      };
     }
   },
 
   Task: {
     assignees: (task) => {
-      // TODO
+      return seedData.users.filter(user => task.assigneeIds.includes(user.id));
     },
     column: (task) => {
-      // TODO
+      return seedData.columns.find(column => column.id === task.columnId);
     },
     comments: (task) => {
-      // TODO
+      return seedData.comments.filter(comment => comment.taskId === task.id);
     }
   },
 
   Comment: {
     author: (comment) => {
-      // TODO
+      return seedData.users.find(user => user.id === comment.authorId);
     },
     task: (comment) => {
-      // TODO
+      return seedData.tasks.find(task => task.id === comment.taskId);
     }
   },
 
@@ -111,19 +138,60 @@ export const resolvers = ({ pubSub }) => ({
     },
 
     createTask: (_, { input }, { user, pubSub }) => {
-      // TODO
+      if (!user) throw new Error('Authentication required');
+
+      const newTask = {
+        id: nanoid(),
+        title: input.title,
+        description: input.description || '',
+        assigneeIds: input.assigneeIds,
+        columnId: input.columnId
+      };
+
+      seedData.tasks.push(newTask);
+
+      pubSub.publish(TOPICS.TASK_CREATED(seedData.board.id), { taskCreated: newTask });
+
+      return newTask;
     },
 
     updateTask: (_, { input }, { user, pubSub }) => {
-      // TODO
+      if (!user) throw new Error('Authentication required');
+
+      const task = seedData.tasks.find(t => t.id === input.id);
+      if (!task) throw new Error('Task not found');
+
+      task.title = input.title;
+      task.description = input.description || '';
+      task.assigneeIds = input.assigneeIds;
+
+      pubSub.publish(TOPICS.TASK_UPDATED(seedData.board.id), { taskUpdated: task });
+
+      return task;
     },
 
     moveTask: (_, { id, toColumnId }, { user, pubSub }) => {
-      // TODO
+      if (!user) throw new Error('Authentication required');
+
+      const task = seedData.tasks.find(t => t.id === id);
+      if (!task) throw new Error('Task not found');
+
+      task.columnId = toColumnId;
+
+      pubSub.publish(TOPICS.TASK_MOVED(seedData.board.id), { taskMoved: task });
+
+      return task;
     },
 
     deleteTask: (_, { id }, { user }) => {
-      // TODO
+      if (!user) throw new Error('Authentication required');
+
+      const taskIndex = seedData.tasks.findIndex(t => t.id === id);
+      if (taskIndex === -1) throw new Error('Task not found');
+
+      seedData.tasks.splice(taskIndex, 1);
+
+      return true;
     },
 
     // TODO 2.4 - Mutations de commentaires (inclus dans Mutation)
@@ -133,11 +201,38 @@ export const resolvers = ({ pubSub }) => ({
     // - Pour deleteComment, vérifier que l'utilisateur est l'auteur
     
     addComment: (_, { taskId, content }, { user, pubSub }) => {
-      // TODO
+      if (!user) throw new Error('Authentication required');
+
+      const task = seedData.tasks.find(t => t.id === taskId);
+      if (!task) throw new Error('Task not found');
+
+      const newComment = {
+        id: nanoid(),
+        content,
+        authorId: user.id,
+        taskId,
+        createdAt: new Date().toISOString()
+      };
+
+      seedData.comments.push(newComment);
+
+      pubSub.publish(TOPICS.COMMENT_ADDED(taskId), { commentAdded: newComment });
+
+      return newComment;
     },
 
     deleteComment: (_, { id }, { user }) => {
-      // TODO
+      if (!user) throw new Error('Authentication required');
+
+      const commentIndex = seedData.comments.findIndex(c => c.id === id);
+      if (commentIndex === -1) throw new Error('Comment not found');
+
+      const comment = seedData.comments[commentIndex];
+      if (comment.authorId !== user.id) throw new Error('Not authorized to delete this comment');
+
+      seedData.comments.splice(commentIndex, 1);
+
+      return true;
     }
   },
 
@@ -148,16 +243,36 @@ export const resolvers = ({ pubSub }) => ({
   
   Subscription: {
     taskCreated: {
-      // TODO
+      subscribe: (_, __, { pubSub }) => {
+        return pubSub.asyncIterator(TOPICS.TASK_CREATED(seedData.board.id));
+      },
+      resolve: (payload) => {
+        return payload.taskCreated;
+      }
     },
     taskUpdated: {
-      // TODO
+      subscribe: (_, __, { pubSub }) => {
+        return pubSub.asyncIterator(TOPICS.TASK_UPDATED(seedData.board.id));
+      },
+      resolve: (payload) => {
+        return payload.taskUpdated;
+      }
     },
     taskMoved: {
-      // TODO
+      subscribe: (_, __, { pubSub }) => {
+        return pubSub.asyncIterator(TOPICS.TASK_MOVED(seedData.board.id));
+      },
+      resolve: (payload) => {
+        return payload.taskMoved;
+      }
     },
     commentAdded: {
-      // TODO
+      subscribe: (_, __, { pubSub }) => {
+        return pubSub.asyncIterator(TOPICS.COMMENT_ADDED(seedData.board.id));
+      },
+      resolve: (payload) => {
+        return payload.commentAdded;
+      }
     }
   }
 });

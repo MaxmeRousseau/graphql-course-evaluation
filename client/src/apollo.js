@@ -8,7 +8,62 @@
 // 6. Configurer typePolicies pour merger les edges de pagination
 
 import useAuth from './store'
+import { ApolloClient, InMemoryCache, HttpLink, split, createHttpLink } from '@apollo/client';
 
 // TODO : Importer et configurer les links
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+});
 
-export const client = null // À remplacer par l'instance ApolloClient
+const authLink = setContext((_, { headers}) => {
+    const token = useAuth.getState().token;
+    return {
+        headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : '',
+        }
+    }
+})
+
+const wsLink = new WebSocketLink({
+  uri: 'ws://localhost:4000/graphql',
+  options: {
+    reconnect: true,
+    connectionParams: {
+      authToken: useAuth.getState().token,
+    },
+  },
+});
+
+const splitLink = split(
+  ({ operationType }) => {
+    return operationType === OperationTypeNode.SUBSCRIPTION;
+  },
+  wsLink,
+  httpLink
+);
+
+const cache = new InMemoryCache({
+  typePolicies: {
+    Column: {
+      fields: {
+        tasks: {
+          keyArgs: false,
+          merge(existing = { edges: [] }, incoming) {
+            const edges = existing.edges ? existing.edges.slice(0) : [];
+            edges.push(...incoming.edges);
+            return {
+              edges,
+              pageInfo: incoming.pageInfo,
+            };
+          },
+        },
+      },
+    },
+  },
+});
+
+export const client = new ApolloClient({
+  link: splitLink,
+  cache
+});
