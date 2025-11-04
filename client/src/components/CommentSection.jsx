@@ -11,25 +11,31 @@ import useToast from '../toastStore'
 
 const ADD_COMMENT = gql`
 mutation AddComment($taskId: ID!, $content: String!) {
-  # TODO
+  addComment(taskId: $taskId, content: $content) {
+    id
+  }
 }
 `
 
 const DELETE_COMMENT = gql`
 mutation DeleteComment($id: ID!) {
-  # TODO
+  deleteComment(id: $id)
 }
 `
 
 const COMMENT_ADDED = gql`
 subscription OnCommentAdded($taskId: ID!) {
-  # TODO
+  commentAdded(taskId: $taskId) {
+    id
+  }
 }
 `
 
 const ME = gql`
 query Me {
-  # TODO
+  id
+  name
+  email
 }
 `
 

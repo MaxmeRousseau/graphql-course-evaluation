@@ -22,23 +22,29 @@ const ME = gql`
 
 const BOARD = gql`
   query Board {
-  board {
-    id
-    name
-    columns {
+    board {
       id
-      order
       name
-      tasks {
+      columns {
         id
-        title
-        description
-        assignees {
+        order
+        name
+        tasks {
           id
-          name
-          email
-        }        
+          title
+          description
+          assignees {
+            id
+            name
+            email
+          }        
+        }
       }
+    }
+    users {
+      id
+      name
+      email
     }
   }
 `
@@ -73,19 +79,25 @@ function ThemeToggle() {
 
 const TASK_CREATED = gql`
   subscription OnTaskCreated($boardId: ID!) {
-    # TODO
+    taskCreated(boardId: $boardId) {
+      id
+    }
   }
 `
 
 const TASK_UPDATED = gql`
   subscription OnTaskUpdated($boardId: ID!) {
-    # TODO
+    taskUpdated(boardId: $boardId) {
+      id
+    }
   }
 `
 
 const TASK_MOVED = gql`
   subscription OnTaskMoved($boardId: ID!) {
-    # TODO
+    taskMoved(boardId: $boardId) {
+      id
+    }
   }
 `
 
