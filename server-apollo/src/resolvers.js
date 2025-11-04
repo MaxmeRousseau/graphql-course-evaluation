@@ -84,7 +84,18 @@ export const resolvers = ({ pubSub }) => ({
       return tasks.slice(0, first);
     },
 
-    
+  },
+
+  Task: {
+    assignees: (task) => {
+      return seedData.users.filter(user => task.assigneeIds.includes(user.id));
+    },
+    column: (task) => {
+      return seedData.columns.find(column => column.id === task.columnId);
+    },
+    comments: (task) => {
+      return seedData.comments.filter(comment => comment.taskId === task.id);
+    },
     tasksConnection: (column, { first = 10, after }) => {
       let tasks = seedData.tasks.filter(task => task.columnId === column.id);
       if (after) {
@@ -99,7 +110,7 @@ export const resolvers = ({ pubSub }) => ({
         node: task,
         cursor: toCursor(task.id)
       }));
-      const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : null;
+      const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : edges.length - 1;
       const hasNextPage = tasks.length > first;
       return {
         edges,
@@ -108,18 +119,6 @@ export const resolvers = ({ pubSub }) => ({
           hasNextPage
         }
       };
-    }
-  },
-
-  Task: {
-    assignees: (task) => {
-      return seedData.users.filter(user => task.assigneeIds.includes(user.id));
-    },
-    column: (task) => {
-      return seedData.columns.find(column => column.id === task.columnId);
-    },
-    comments: (task) => {
-      return seedData.comments.filter(comment => comment.taskId === task.id);
     }
   },
 

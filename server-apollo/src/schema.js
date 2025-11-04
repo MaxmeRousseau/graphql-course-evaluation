@@ -24,7 +24,6 @@ export const typeDefs = /* GraphQL */ `
     name: String!
     order: Int!
     tasks(first: Int, after: String): [Task!]!
-    tasksConnection: TaskConnection!
   }
 
   type Task {
@@ -34,6 +33,7 @@ export const typeDefs = /* GraphQL */ `
     assignees: [User!]!
     column: Column!
     comments: [Comment!]!
+    tasksConnection: TaskConnection!
   }
 
   type Comment {
