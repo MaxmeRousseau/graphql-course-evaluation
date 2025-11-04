@@ -28,14 +28,6 @@ cd server-apollo
 npm install
 ```
 
-**Option 2 : Serveur Graphene (Python)**
-```bash
-cd server-python
-python3 -m venv venv
-source venv/bin/activate  # Sur Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
 **Client React :**
 ```bash
 cd client

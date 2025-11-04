@@ -8,36 +8,55 @@
 export const typeDefs = /* GraphQL */ `
   # Types principaux
   type User {
-    # TODO : id, name, email
+    id: ID!
+    name: String!
+    email: String!
   }
 
   type Board {
-    # TODO : id, name, columns
+    id: ID!
+    name: String!
+    columns: [Column!]!
   }
 
   type Column {
-    # TODO : id, name, order, tasks (avec pagination)
+    id: ID!
+    name: String!
+    order: Int!
+    tasks(first: Int, after: String): TaskConnection!
   }
 
   type Task {
-    # TODO : id, title, description, assignees, column, comments
+    id: ID!
+    title: String!
+    description: String
+    assignees: [User!]!
+    column: Column!
+    comments: [Comment!]!
   }
 
   type Comment {
-    # TODO : id, content, author, task, createdAt
+    id: ID!
+    content: String!
+    author: User!
+    task: Task!
+    createdAt: String!
   }
 
   # Pagination
   type TaskEdge {
-    # TODO : node, cursor
+    node: Task!
+    cursor: String!
   }
 
   type PageInfo {
-    # TODO : endCursor, hasNextPage
+    endCursor: String!
+    hasNextPage: Boolean!
   }
 
   type TaskConnection {
-    # TODO : edges, pageInfo
+    edges: [TaskEdge!]!
+    pageInfo: PageInfo!
   }
 
   # Operations
@@ -48,11 +67,17 @@ export const typeDefs = /* GraphQL */ `
   }
 
   input CreateTaskInput {
-    # TODO : title, description, assigneeIds, columnId
+    title: String!
+    description: String
+    assigneeIds: [ID!]!
+    columnId: ID!
   }
 
   input UpdateTaskInput {
-    # TODO : id, title, description, assigneeIds
+    id: ID!
+    title: String!
+    description: String
+    assigneeIds: [ID!]!
   }
 
   type Mutation {
