@@ -125,14 +125,6 @@ Utilisez ces comptes pour vous connecter :
   - Queries et Mutations : 10 points
   - Subscriptions temps réel : 10 points
 
-## 🎁 Fonctionnalités bonus (déjà implémentées)
-
-Si vous terminez en avance, vous pouvez explorer ces fonctionnalités déjà présentes :
-- ✅ Assignation multiple d'utilisateurs
-- ✅ Système de commentaires avec temps réel
-- ✅ Mode sombre
-- ✅ Drag & drop des tâches
-
 ## 📝 Technologies utilisées
 
 **Backend (2 options au choix) :**
