@@ -14,19 +14,40 @@ import useTheme from '../themeStore'
 
 const ME = gql`
   query Me {
-    # TODO
+    id
+    name
+    email
   }
 `
 
 const BOARD = gql`
   query Board {
-    # TODO
+  board {
+    id
+    name
+    columns {
+      id
+      order
+      name
+      tasks {
+        id
+        title
+        description
+        assignees {
+          id
+          name
+          email
+        }        
+      }
+    }
   }
 `
 
 const CREATE_TASK = gql`
   mutation CreateTask($input: CreateTaskInput!) {
-    # TODO
+    createTask(input: $input) {
+      id
+    }
   }
 `
 

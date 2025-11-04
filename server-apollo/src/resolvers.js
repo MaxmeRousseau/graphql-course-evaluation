@@ -74,24 +74,33 @@ export const resolvers = ({ pubSub }) => ({
   Column: {
     tasks: (column, { first = 10, after }) => {
       let tasks = seedData.tasks.filter(task => task.columnId === column.id);
-
       if (after) {
         const afterId = fromCursor(after);
         const index = tasks.findIndex(task => task.id === afterId);
-        if (index >= 0) {
+        if (index !== -1) {
           tasks = tasks.slice(index + 1);
         }
       }
+      return tasks.slice(0, first);
+    },
 
+    
+    tasksConnection: (column, { first = 10, after }) => {
+      let tasks = seedData.tasks.filter(task => task.columnId === column.id);
+      if (after) {
+        const afterId = fromCursor(after);
+        const index = tasks.findIndex(task => task.id === afterId);
+        if (index !== -1) {
+          tasks = tasks.slice(index + 1);
+        }
+      }
       const slicedTasks = tasks.slice(0, first);
       const edges = slicedTasks.map(task => ({
         node: task,
         cursor: toCursor(task.id)
       }));
-
       const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : null;
       const hasNextPage = tasks.length > first;
-
       return {
         edges,
         pageInfo: {
