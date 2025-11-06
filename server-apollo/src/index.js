@@ -12,6 +12,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import jwt from 'jsonwebtoken';
+import cors from 'cors';
 
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
@@ -30,7 +31,10 @@ const server = new ApolloServer({ schema,
 await server.start();
 
 
-app.use('/graphql', express.json(), expressMiddleware(server, {
+app.use('/graphql', 
+    cors(),
+    express.json(), 
+    expressMiddleware(server, {
     context: async ({ req, res }) => {
         const auth = req.headers && (req.headers.authorization || req.headers.Authorization || '')
         let user = null
