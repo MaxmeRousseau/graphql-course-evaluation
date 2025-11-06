@@ -14,9 +14,11 @@ import useTheme from '../themeStore'
 
 const ME = gql`
   query Me {
-    id
-    name
-    email
+    me {
+      id
+      name
+      email
+    }
   }
 `
 
