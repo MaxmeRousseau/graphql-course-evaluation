@@ -50,11 +50,15 @@ const cache = new InMemoryCache({
         tasks: {
           keyArgs: false,
           merge(existing = { edges: [] }, incoming) {
+            if (!incoming) return existing;
+            const incomingEdges = Array.isArray(incoming)
+              ? incoming
+              : (incoming.edges ?? []);
             const edges = existing.edges ? existing.edges.slice(0) : [];
-            edges.push(...incoming.edges);
+            edges.push(...incomingEdges);
             return {
               edges,
-              pageInfo: incoming.pageInfo,
+              pageInfo: incoming.pageInfo ?? existing.pageInfo,
             };
           },
         },
