@@ -68,6 +68,6 @@ const cache = new InMemoryCache({
 });
 
 export const client = new ApolloClient({
-  link: splitLink,
+  link: authLink.concat(splitLink),
   cache
 });
