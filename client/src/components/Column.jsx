@@ -11,30 +11,25 @@ import TaskModal from './TaskModal'
 import useToast from '../toastStore'
 
 const TASKS_FOR_COLUMN = gql`
-query TasksForColumn {
+query TasksForColumn($first: Int = 10, $after: String) {
   board {
     id
     columns {
       id
       name
-      tasks(first: 100) {
-        tasksConnection {
-          edges {
-            cursor
-            node {
-              id
-              title
-              description
-              assignees { id name }
-              comments { id content author { id name } createdAt }
-              column { id }
-            }
-          }
-          pageInfo {
-            endCursor
-            hasNextPage
+      tasks(first: $first, after: $after) {
+        edges {
+          cursor
+          node {
+            id
+            title
+            description
+            assignees { id name }
+            comments { id content author { id name } createdAt }
+            column { id }
           }
         }
+        pageInfo { endCursor hasNextPage }
       }
     }
   }

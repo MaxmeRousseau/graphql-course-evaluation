@@ -23,7 +23,7 @@ export const typeDefs = /* GraphQL */ `
     id: ID!
     name: String!
     order: Int!
-    tasks(first: Int, after: String): [Task!]!
+    tasks(first: Int, after: String): TaskConnection!
   }
 
   type Task {

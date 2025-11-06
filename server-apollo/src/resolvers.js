@@ -73,15 +73,24 @@ export const resolvers = ({ pubSub }) => ({
   
   Column: {
     tasks: (column, { first = 10, after }) => {
-      let tasks = seedData.tasks.filter(task => task.columnId === column.id);
+      const allTasks = seedData.tasks.filter(task => task.columnId === column.id);
+      let startIndex = 0;
       if (after) {
         const afterId = fromCursor(after);
-        const index = tasks.findIndex(task => task.id === afterId);
-        if (index !== -1) {
-          tasks = tasks.slice(index + 1);
-        }
+        const idx = allTasks.findIndex(task => task.id === afterId);
+        if (idx !== -1) startIndex = idx + 1;
       }
-      return tasks.slice(0, first);
+      const sliced = allTasks.slice(startIndex, startIndex + first);
+      const edges = sliced.map(task => ({ node: task, cursor: toCursor(task.id) }));
+      const endCursor = edges.length ? edges[edges.length - 1].cursor : '';
+      const hasNextPage = startIndex + first < allTasks.length;
+      return {
+        edges,
+        pageInfo: {
+          endCursor,
+          hasNextPage
+        }
+      };
     },
 
   },
@@ -91,35 +100,12 @@ export const resolvers = ({ pubSub }) => ({
       return seedData.users.filter(user => task.assigneeIds.includes(user.id));
     },
     column: (task) => {
-      return seedData.columns.find(column => column.id === task.columnId);
+      const boards = seedData.boards ?? (seedData.board ? [seedData.board] : [])
+      return boards.flatMap(board => board.columns).find(column => column.id === task.columnId);
     },
     comments: (task) => {
       return seedData.comments.filter(comment => comment.taskId === task.id);
     },
-    tasksConnection: (column, { first = 10, after }) => {
-      let tasks = seedData.tasks.filter(task => task.columnId === column.id);
-      if (after) {
-        const afterId = fromCursor(after);
-        const index = tasks.findIndex(task => task.id === afterId);
-        if (index !== -1) {
-          tasks = tasks.slice(index + 1);
-        }
-      }
-      const slicedTasks = tasks.slice(0, first);
-      const edges = slicedTasks.map(task => ({
-        node: task,
-        cursor: toCursor(task.id)
-      }));
-      const endCursor = edges.length > 0 ? edges[edges.length - 1].cursor : edges.length - 1;
-      const hasNextPage = tasks.length > first;
-      return {
-        edges,
-        pageInfo: {
-          endCursor,
-          hasNextPage
-        }
-      };
-    }
   },
 
   Comment: {

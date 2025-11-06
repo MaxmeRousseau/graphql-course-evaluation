@@ -31,15 +31,21 @@ const BOARD = gql`
         id
         order
         name
-        tasks {
-          id
-          title
-          description
-          assignees {
-            id
-            name
-            email
-          }        
+        tasks(first: 10) {
+          edges {
+            node {
+              id
+              title
+              description
+              assignees {
+                id
+                name
+                email
+              }
+            }
+            cursor
+          }
+          pageInfo { endCursor hasNextPage }
         }
       }
     }
