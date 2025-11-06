@@ -12,6 +12,7 @@ import { ApolloClient, InMemoryCache, split, createHttpLink } from '@apollo/clie
 import { setContext } from '@apollo/client/link/context';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 
 // TODO : Importer et configurer les links
 const httpLink = createHttpLink({
@@ -34,8 +35,9 @@ const wsLink = new GraphQLWsLink(createClient({
 }));
 
 const splitLink = split(
-  ({ operationType }) => {
-    return operationType === OperationTypeNode.SUBSCRIPTION;
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return definition.kind === 'OperationDefinition' && definition.operation === 'subscription';
   },
   wsLink,
   httpLink
